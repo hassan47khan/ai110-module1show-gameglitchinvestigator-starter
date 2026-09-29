@@ -25,9 +25,19 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
+- [x] Describe the game's purpose.
+- [x] Detail which bugs you found.
+
+Bugs
+logic_utils.py:26: crash on some inputs. The except only catches TypeError and ValueError. Typing 1.0e999 makes float() return infinity, and int(inf) raises OverflowError. I ran it and the app would crash. Add OverflowError to the tuple.
+
+app.py:91-98 and logic_utils.py:12-29: no range check. A guess of -500 or 9999 is accepted, counts as an attempt and costs points, even though the game says "between 1 and 20". parse_guess doesn't know low and high, so the check needs to go there (with new parameters) or in app.py.
+
+app.py:57-67: stale display. "Attempts left" and the Debug Info panel (attempts, score, history) render before the submit is processed. After each guess they are one step behind until the next interaction. Move that display below the if submit: block, or call st.rerun() after processing.
+
+logic_utils.py:8 with app.py:30-34: difficulty makes no sense. Hard is 1–50 with 5 attempts, which is easier than Normal at 1–100 with 8. Easy gets only 6 attempts, fewer than Normal. Hard should have the widest range. The test at test_game_logic.py:122-123 asserts (1, 50), so it would need updating too.
+
+- [x] Explain what fixes you applied.
 
 ## 📸 Demo Walkthrough
 
@@ -46,8 +56,13 @@ Describe your fixed game in numbered steps so a reader can follow along without 
 ```
 # Paste your pytest output here, e.g.:
 # pytest tests/
-# ========================= X passed in 0.XXs =========================
-```
+platform win32 -- Python 3.13.9, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Codepath\CodePath assignments\Game Glitch Investigator\ai110-module1show-gameglitchinvestigator-starter
+plugins: anyio-4.12.1
+collected 29 items                                                                                                                        
+tests\test_game_logic.py .............................                                                                              [100%]
+=========================================================== 29 passed in 0.04s ===========================================================
+
 
 ## 🚀 Stretch Features
 
